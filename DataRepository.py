@@ -21,6 +21,7 @@ class DataRepository:
         except:
             self.ftp = None
             logging.error("error connecting to ftp server '" + self.server + "' with username: '" + self.username + "'")
+
     def load_data(self, filename: str):
         if self.ftp is None:
             return None
@@ -32,7 +33,14 @@ class DataRepository:
 
         data_reader = DataReader()
 
-        retrlines = self.ftp.retrlines("RETR " + filename, callback=data_reader.handle_line)
-        print(retrlines)
+        read_lines = self.ftp.retrlines("RETR " + filename, callback=data_reader.handle_line)
 
+        if read_lines != "226 Transfer complete":
+            return None
 
+        result = []
+        for bill in data_reader.list:
+            if len(bill.positions) > 0:
+                result.append(bill)
+
+        return result
