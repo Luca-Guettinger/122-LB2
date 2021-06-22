@@ -6,7 +6,7 @@ class BillPosition:
             amount,
             price,
             total,
-            mwst,
+            mwst: str,
     ):
         self.number = number
         self.name = name

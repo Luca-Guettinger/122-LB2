@@ -21,13 +21,11 @@ Auftragsnummer:    ${BILL_ORDER_ID}
 	 
 Rechnung Nr       ${BILL_ID}
 -----------------------
-  1   Einrichten E-Mailclients              6      25.00  CHF      150.00  0.00%
-  2   Konfig & Schulung Scanningcenter      1    1200.00  CHF     1200.00  0.00%
-                                                              -----------       
-                                                Total CHF         1350.00
+${BILL_POSITIONS}
+                                                              -----------
+                                                  Total CHF  {:>10}
 
-                                                MWST  CHF            0.00
-
+                                                  MWST  CHF  {:>10}
 
 
 
@@ -43,7 +41,8 @@ Rechnung Nr       ${BILL_ID}
 
 
 
-Zahlungsziel ohne Abzug 30 Tage (30.08.2020)
+
+Zahlungsziel ohne Abzug 30 Tage (${BILL_PAYMENT_TARGET})
 
 Einzahlungsschein
 
@@ -57,10 +56,10 @@ Einzahlungsschein
 
 
 
-    1350 . 00                    1350 . 00     Autoleasing AG
-                                               Gewerbestrasse 100
-0 00000 00000 00000                            5000 Aarau
+   {:>5} . {:2}                   {:>5} . {:2}     {:1}
+                                               {:1}
+{:20}                           {:1}
 
-Autoleasing AG
-Gewerbestrasse 100
-5000 Aarau
+${CLIENT_NAME}
+${CLIENT_STREET}
+${CLIENT_ZIP}

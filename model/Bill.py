@@ -15,7 +15,7 @@ class Bill:
             order_id,
             sender_location,
             date: datetime,
-            payment_target,
+            payment_target: datetime,
             days_to_pay,
     ):
         self.bill_id = bill_id
