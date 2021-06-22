@@ -1,9 +1,44 @@
+import json
 import logging
-
-from DataRepository import DataRepository
-
+import sys
+from types import SimpleNamespace
+from Data.DataLoader import DataLoader
+from Generator.MailSender import MailSender
+from Generator.TxtGenerator import TxtGenerator
+from Generator.XmlGenerator import XmlGenerator
+from model.Config import Config
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
-    dataRepo = DataRepository('ftp.haraldmueller.ch', 'schoolerinvoices', 'Berufsschule8005!', '/out/AP18dGuettinger')
-    print(dataRepo.load_data('rechnung21003.data'))
+    log_path = "lb2.log"
+    config: Config
+
+    if len(sys.argv) != 2:
+        logging.basicConfig(filename=log_path, encoding='utf-8', level=logging.DEBUG)
+        logging.error("no valid start parameter found: config path needed!")
+        exit(-1)
+
+    try:
+        config_path = sys.argv[1]
+        with open(config_path) as config_file:
+            config = json.load(config_file, object_hook=lambda d: SimpleNamespace(**d))
+    except:
+        logging.basicConfig(filename=log_path, encoding='utf-8', level=logging.DEBUG)
+        logging.error("could not load JSON file: " + config_path)
+        exit(-1)
+
+    logging.basicConfig(filename=config.log_path, encoding='utf-8', level=logging.DEBUG)
+
+    dataLoader = DataLoader(config)
+    data = dataLoader.load_data()
+
+    xml_generator = XmlGenerator(config)
+    xml_generator.write_bills(data)
+
+    txt_generator = TxtGenerator(config)
+    txt_generator.write_bills(bills=data)
+
+    mailSender = MailSender(config)
+    #mails = mailSender.send_mails(bills=data)
+
+    #print(mails)
+    print(data)

@@ -88,7 +88,7 @@ class DataReader:
             return False
 
         biller.party_id = segmented_line[1]
-        biller.client_id = segmented_line[2]
+        biller.account_id = segmented_line[2]
         biller.name = segmented_line[3]
         biller.street = segmented_line[4]
         biller.zip = segmented_line[5]

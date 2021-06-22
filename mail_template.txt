@@ -1,0 +1,12 @@
+Sehr geehrter ${BILLER_NAME}
+
+
+Am ${DATE} wurde die erfolgreiche Bearbeitung der Rechnung ${BILL_ID}
+vom Zahlungssystem ${FTP_OUT_ADDRESS} gemeldet.
+
+
+Mit freundlichen Grüssen
+
+
+Vorname Nachname
+Firma X
