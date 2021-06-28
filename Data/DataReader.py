@@ -25,9 +25,6 @@ class DataReader:
         if line.startswith("RechnPos"):
             self.__handle_pos(line)
 
-    def print_list(self):
-        print(self.list)
-
     def __handle_bill(self, line: str):
         current_bill = Bill(None, None, None, None, None, None)
         segmented_line = str.split(line, ";")

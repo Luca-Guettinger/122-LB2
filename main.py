@@ -2,7 +2,9 @@ import json
 import logging
 import sys
 from types import SimpleNamespace
-from Data.DataLoader import DataLoader
+
+from Data.OutputLoader import OutputLoader
+from Data.SourceLoader import DataLoader
 from Generator.MailSender import MailSender
 from Generator.TxtGenerator import TxtGenerator
 from Generator.XmlGenerator import XmlGenerator
@@ -37,8 +39,5 @@ if __name__ == '__main__':
     txt_generator = TxtGenerator(config)
     txt_generator.write_bills(bills=data)
 
-    mailSender = MailSender(config)
-    #mails = mailSender.send_mails(bills=data)
-
-    #print(mails)
-    print(data)
+    output_load = OutputLoader(config)
+    output_load.copy_files()

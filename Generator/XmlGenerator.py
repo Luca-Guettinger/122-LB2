@@ -17,7 +17,8 @@ class XmlGenerator:
         return True
 
     def __write_xml(self, bill: Bill):
-        out_path = f'{self.config.temp_output_path}\\{bill.biller.account_id}_{bill.bill_id}_invoice.xml'
+        base_path = f"{self.config.temp_output_path}\\{bill.bill_id}"
+        out_path = f'{base_path}\\{bill.biller.account_id}_{bill.bill_id}_invoice.xml'
 
         try:
             xml = FileUtils.read_template(self.config.xml_template_path).substitute(

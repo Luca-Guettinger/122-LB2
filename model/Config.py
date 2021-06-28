@@ -12,7 +12,6 @@ class Config:
     ftp_source_username: str
     ftp_source_password: str
     ftp_source_path: str
-    ftp_source_file_name: str
 
     ftp_output_server: str
     ftp_output_username: str

@@ -10,7 +10,7 @@ def read_template(file: str):
 
 def write_to_file(content: str, file_path: str):
     try:
-        logging.info("Writing to file {file_path}")
+        logging.info("Writing to file " + file_path)
         file = open(file_path, 'w+', encoding='utf-8')
         file.write(content)
         file.close()

@@ -19,7 +19,7 @@ class TxtGenerator:
         return True
 
     def __write_txt(self, bill: Bill):
-        out_path = f'{self.config.temp_output_path}\\{bill.biller.account_id}_{bill.bill_id}_invoice.txt'
+        out_path = f'{self.config.temp_output_path}\\{bill.bill_id}\\{bill.biller.account_id}_{bill.bill_id}_invoice.txt'
 
         # try:
         place_date = bill.sender_location + ", den " + date.today().strftime("%d.%m.%Y")

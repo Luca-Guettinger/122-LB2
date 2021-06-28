@@ -31,7 +31,6 @@ class MailSender:
 
     def __send_mail(self, bill: Bill, smtp: smtplib.SMTP):
         logging.info("starting to send mail for bill with id " + bill.bill_id)
-        print(bill)
 
         msg = MIMEMultipart()
         message = FileUtils.read_template(self.config.mail_template_path).substitute(
