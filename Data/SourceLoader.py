@@ -7,7 +7,7 @@ from Data.DataReader import DataReader
 from model.Config import Config
 
 
-class DataLoader:
+class SourceLoader:
     ftp: FTP
 
     def __connect_source(self):
@@ -53,8 +53,8 @@ class DataLoader:
         local_dir = self.config.temp_output_path + "\\" + bill_id
         Path(local_dir).mkdir(parents=True, exist_ok=True)
 
+        data_reader = DataReader()
         with open(local_dir + "/" + file_name, "wb") as file:
-            data_reader = DataReader()
             copy_file = self.ftp.retrbinary("RETR " + file_name, file.write)
             if copy_file != "226 Transfer complete":
                 logging.error("error downloading file " + self.config.ftp_source_path + "/" + file_name)
@@ -72,3 +72,12 @@ class DataLoader:
                 result.append(bill)
 
         return result
+
+    def delete_data_files(self):
+        files = []
+        self.ftp.dir(files.append)
+
+        for name in self.ftp.nlst():
+            if name.endswith(".data"):
+                logging.info("deleting file from " + self.config.ftp_source_server + " with name " + name)
+                self.ftp.delete(name)

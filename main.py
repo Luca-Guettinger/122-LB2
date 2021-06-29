@@ -4,8 +4,7 @@ import sys
 from types import SimpleNamespace
 
 from Data.OutputLoader import OutputLoader
-from Data.SourceLoader import DataLoader
-from Generator.MailSender import MailSender
+from Data.SourceLoader import SourceLoader
 from Generator.TxtGenerator import TxtGenerator
 from Generator.XmlGenerator import XmlGenerator
 from model.Config import Config
@@ -30,8 +29,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(filename=config.log_path, encoding='utf-8', level=logging.DEBUG)
 
-    dataLoader = DataLoader(config)
-    data = dataLoader.load_data()
+    source_loader = SourceLoader(config)
+    data = source_loader.load_data()
 
     xml_generator = XmlGenerator(config)
     xml_generator.write_bills(data)
@@ -40,4 +39,8 @@ if __name__ == '__main__':
     txt_generator.write_bills(bills=data)
 
     output_load = OutputLoader(config)
-    output_load.copy_files()
+    output_load.upload_files()
+
+    # deletes all the files that end with .data from the source, after
+    source_loader.delete_data_files()
+    output_load.handle_receipts()

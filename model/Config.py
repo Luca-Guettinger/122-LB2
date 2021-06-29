@@ -18,6 +18,8 @@ class Config:
     ftp_output_password: str
     ftp_output_path: str
 
+    ftp_output_receipt_path: str
+
     temp_output_path: str
 
     xml_template_path: str

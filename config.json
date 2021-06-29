@@ -17,6 +17,7 @@
   "ftp_output_username": "310721-297-zahlsystem",
   "ftp_output_password": "Berufsschule8005!",
   "ftp_output_path": "/in/AP18dGuettinger",
+  "ftp_output_receipt_path": "/out/AP18dGuettinger",
 
   "temp_output_path": "C:\\temp\\122\\tmp",
 
