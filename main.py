@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 from Data.OutputLoader import OutputLoader
 from Data.SourceLoader import SourceLoader
+from Generator.MailSender import MailSender
 from Generator.TxtGenerator import TxtGenerator
 from Generator.XmlGenerator import XmlGenerator
 from model.Config import Config
@@ -41,6 +42,12 @@ if __name__ == '__main__':
     output_load = OutputLoader(config)
     output_load.upload_files()
 
-    # deletes all the files that end with .data from the source, after
     source_loader.delete_data_files()
+
     output_load.handle_receipts()
+
+    mail_sender = MailSender(config)
+    mail_sender.send_mails()
+
+    output_load.upload_zip_and_delete_files()
+

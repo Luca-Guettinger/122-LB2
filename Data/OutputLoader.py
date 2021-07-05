@@ -85,32 +85,23 @@ class OutputLoader:
                 continue
 
             local_data_file = base_path + "\\" + receipt.bill_id + "\\rechnung" + receipt.bill_id + ".data"
-            logging.info("loading file " + local_data_file)
-
-            file = open(local_data_file, "r")
-            lines = file.readlines()
-            file.close()
-
-            data_reader = DataReader()
-            for line in lines:
-                data_reader.handle_line(line)
-            bills = data_reader.list
-
-            if len(bills) != 1:
-                logging.error("there are multiple bills in one file: " + local_data_file)
-                return None
 
             if not os.path.isfile(local_data_file):
                 logging.error("no local data file found, exiting process: " + local_data_file)
                 return None
-            os.remove(local_data_file)
 
             with open(base_path + "\\" + receipt.bill_id + "\\" + receipt.file_name, "wb") as file:
                 copy_file = self.ftp.retrbinary("RETR " + receipt.file_name, file.write)
-                if copy_file != "226 Transfer complete":
+                if not copy_file.startswith("226"):
                     logging.error("error downloading file " + self.config.ftp_source_path + "/" + receipt.file_name)
                     return None
-                self.ftp.delete(receipt.file_name)
+        deleted = []
+        for rec_to_delete_key in self.receipts:
+            rec_to_delete = self.receipts[rec_to_delete_key]
+            if rec_to_delete.file_name in deleted:
+                continue
+            deleted.append(rec_to_delete.file_name)
+            self.ftp.delete(rec_to_delete.file_name)
 
     def __read_receipt_line(self, line: str):
         bill_id = "NONE"
@@ -139,3 +130,14 @@ class OutputLoader:
         if file_name.endswith("xml"):
             receipt.txt_found = True
         return True
+
+    def upload_zip_and_delete_files(self):
+        for path in os.scandir(self.config.temp_output_path):
+            zip_name = ""
+            for file_name in os.listdir(path):
+                if file_name.endswith(".zip"):
+                    zip_name = file_name
+                    break
+            #TODO do this
+
+        pass
