@@ -38,12 +38,28 @@ class OutputLoader:
             return None
 
         for path in os.scandir(self.config.temp_output_path):
+            last_file_path = ""
+            last_file_name = ""
+            has_receipt = False
             for file_name in os.listdir(path):
-                if (file_name.endswith(".data")):
+                if has_receipt:
                     continue
-                dir = self.config.temp_output_path + "\\" + file_name.split("_")[1] + "\\" + file_name
-                with open(dir, "rb") as file:
-                    self.ftp.storbinary("STOR %s" % file_name, file)
+                if file_name.endswith(".data"):
+                    continue
+                if file_name.startswith("quittungsfile"):
+                    has_receipt = True
+                    continue
+                last_file_path = self.config.temp_output_path + "\\" + file_name.split("_")[1]
+                last_file_name = file_name
+
+            if not has_receipt:
+                txt_file_name = last_file_name.split(".")[0] + ".txt"
+                with open(last_file_path + "\\" + txt_file_name, "rb") as file_txt:
+                    self.ftp.storbinary("STOR %s" % txt_file_name, file_txt)
+
+                xml_file_name = last_file_name.split(".")[0] + ".xml"
+                with open(last_file_path + "\\" + xml_file_name, "rb") as file_txt:
+                    self.ftp.storbinary("STOR %s" % xml_file_name, file_txt)
 
     def handle_receipts(self):
         try:
