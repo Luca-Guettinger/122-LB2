@@ -31,23 +31,17 @@ if __name__ == '__main__':
     logging.basicConfig(filename=config.log_path, encoding='utf-8', level=logging.DEBUG)
 
     source_loader = SourceLoader(config)
-    data = source_loader.load_data()
-
     xml_generator = XmlGenerator(config)
-    xml_generator.write_bills(data)
-
-    txt_generator = TxtGenerator(config)
-    txt_generator.write_bills(bills=data)
-
+    mail_sender = MailSender(config)
     output_load = OutputLoader(config)
-    output_load.upload_files()
-
-    source_loader.delete_data_files()
+    txt_generator = TxtGenerator(config)
 
     output_load.handle_receipts()
-
-    mail_sender = MailSender(config)
     mail_sender.send_mails()
+    source_loader.upload_zip_and_delete_files()
 
-    output_load.upload_zip_and_delete_files()
+    data = source_loader.load_data()
+    xml_generator.write_bills(data)
+    txt_generator.write_bills(bills=data)
 
+    output_load.upload_files()

@@ -12,6 +12,7 @@
   "ftp_source_password": "Berufsschule8005!",
   "ftp_source_path": "/out/AP18dGuettinger",
   "ftp_source_file_name": "rechnung21003.data",
+  "ftp_source_path_in": "/in/AP18dGuettinger",
 
   "ftp_output_server": "134.119.225.245",
   "ftp_output_username": "310721-297-zahlsystem",
@@ -21,7 +22,7 @@
 
   "temp_output_path": "C:\\temp\\122\\tmp",
 
-  "mail_template_path": "mail_template.txt",
-  "xml_template_path": "xml_template.xml",
-  "txt_template_path": "txt_template.txt"
+  "mail_template_path": "C:\\projects\\tbz\\122\\LB2\\mail_template.txt",
+  "xml_template_path": "C:\\projects\\tbz\\122\\LB2\\xml_template.xml",
+  "txt_template_path": "C:\\projects\\tbz\\122\\LB2\\txt_template.txt"
 }

@@ -7,7 +7,7 @@ from model.Client import Client
 class Bill:
     biller: Biller = None
     client: Client = None
-    positions: [] = list()
+    positions: []
 
     def __init__(
             self,
@@ -24,6 +24,7 @@ class Bill:
         self.date = date
         self.payment_target = payment_target
         self.days_to_pay = days_to_pay
+        self.positions = []
 
     def __repr__(self):
         return f'Bill_id: {self.bill_id};\n' \

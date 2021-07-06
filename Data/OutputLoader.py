@@ -15,7 +15,7 @@ class OutputLoader:
     def __connect_output(self):
         self.ftp = FTP(self.config.ftp_output_server)
         logging.info(
-            "starting to login into the server " + self.config.ftp_output_server + " with the username " + self.config.ftp_output_username)
+            "ftp directory on server " + self.config.ftp_output_server + " now " + self.config.ftp_source_path)
         self.ftp.login(self.config.ftp_output_username, self.config.ftp_output_password)
 
     def __init__(self, config: Config):
@@ -33,6 +33,8 @@ class OutputLoader:
 
         try:
             self.ftp.cwd(self.config.ftp_output_path)
+            logging.info(
+                "ftp directory on server " + self.config.ftp_output_path + " now " + self.config.ftp_source_path)
         except:
             logging.error("error navigating to directory: " + self.config.ftp_output_path)
             return None
@@ -49,23 +51,38 @@ class OutputLoader:
                 if file_name.startswith("quittungsfile"):
                     has_receipt = True
                     continue
-                last_file_path = self.config.temp_output_path + "\\" + file_name.split("_")[1]
-                last_file_name = file_name
 
             if not has_receipt:
+                found_txt_or_xml = False
+                for file_name in os.listdir(path):
+                    if file_name.endswith(".data") or file_name.startswith("quittungsfile"):
+                        continue
+                    if file_name.endswith(".txt") or file_name.endswith(".xml"):
+                        found_txt_or_xml = True
+                    last_file_path = self.config.temp_output_path + "\\" + file_name.split("_")[1]
+                    last_file_name = file_name
+
+                if not found_txt_or_xml:
+                    logging.info("no file in directory " + path.name)
+                    continue
+
                 txt_file_name = last_file_name.split(".")[0] + ".txt"
                 with open(last_file_path + "\\" + txt_file_name, "rb") as file_txt:
                     self.ftp.storbinary("STOR %s" % txt_file_name, file_txt)
+                    logging.info("uploading file " + last_file_path + "\\" + txt_file_name)
 
                 xml_file_name = last_file_name.split(".")[0] + ".xml"
                 with open(last_file_path + "\\" + xml_file_name, "rb") as file_txt:
                     self.ftp.storbinary("STOR %s" % xml_file_name, file_txt)
+                    logging.info("uploading file " + last_file_path + "\\" + xml_file_name)
 
     def handle_receipts(self):
         try:
             self.ftp.cwd(self.config.ftp_output_receipt_path)
+            logging.info(
+                "ftp directory on server " + self.config.ftp_output_receipt_path + " now " + self.config.ftp_source_path)
         except:
-            logging.error("error navigating to directory: " + self.config.ftp_output_path)
+            logging.error("error navigating to directory: " + self.config.ftp_output_receipt_path)
             return None
 
         for file_name in self.ftp.nlst():
@@ -74,6 +91,7 @@ class OutputLoader:
                 continue
             self.current_receipt_file = file_name
             retrlines = self.ftp.retrlines("RETR " + file_name, callback=self.__read_receipt_line)
+            logging.info("downloading file " + file_name)
 
         base_path = self.config.temp_output_path
         for rec in self.receipts:
@@ -92,6 +110,7 @@ class OutputLoader:
 
             with open(base_path + "\\" + receipt.bill_id + "\\" + receipt.file_name, "wb") as file:
                 copy_file = self.ftp.retrbinary("RETR " + receipt.file_name, file.write)
+                logging.info("downloading file " + receipt.file_name)
                 if not copy_file.startswith("226"):
                     logging.error("error downloading file " + self.config.ftp_source_path + "/" + receipt.file_name)
                     return None
@@ -102,6 +121,7 @@ class OutputLoader:
                 continue
             deleted.append(rec_to_delete.file_name)
             self.ftp.delete(rec_to_delete.file_name)
+            logging.info("deleting file " + rec_to_delete.file_name)
 
     def __read_receipt_line(self, line: str):
         bill_id = "NONE"
@@ -131,13 +151,4 @@ class OutputLoader:
             receipt.txt_found = True
         return True
 
-    def upload_zip_and_delete_files(self):
-        for path in os.scandir(self.config.temp_output_path):
-            zip_name = ""
-            for file_name in os.listdir(path):
-                if file_name.endswith(".zip"):
-                    zip_name = file_name
-                    break
-            #TODO do this
 
-        pass

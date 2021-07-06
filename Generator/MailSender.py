@@ -31,7 +31,6 @@ class MailSender:
                 if file_name.endswith(".data"):
                     data_name = file_name
             if not has_receipt:
-                logging.info(dir + " has no receipt file")
                 continue
             local_data_file = os.path.join(dir, data_name)
             logging.info("loading file " + local_data_file)

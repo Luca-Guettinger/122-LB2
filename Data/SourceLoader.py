@@ -30,6 +30,8 @@ class SourceLoader:
         result = []
         try:
             self.ftp.cwd(self.config.ftp_source_path)
+            logging.info(
+                "ftp directory on server " + self.config.ftp_source_server + " now " + self.config.ftp_source_path)
             files = self.ftp.nlst()
         except:
             logging.error("error navigating to directory: " + self.config.ftp_source_path)
@@ -43,24 +45,24 @@ class SourceLoader:
                 continue
             for bill in self.read_file(file_name):
                 result.append(bill)
+        logging.info("found bills: " + len(result).__str__())
         return result
 
     def read_file(self, file_name: str):
         if self.ftp is None:
             return None
 
+        self.ftp.cwd(self.config.ftp_source_path)
+        logging.info(
+            "ftp directory on server " + self.config.ftp_source_server + " now " + self.config.ftp_source_path)
+
         bill_id = file_name.replace("rechnung", "").replace(".data", "")
         local_dir = self.config.temp_output_path + "\\" + bill_id
-        Path(local_dir).mkdir(parents=True, exist_ok=True)
 
         data_reader = DataReader()
-        with open(local_dir + "/" + file_name, "wb") as file:
-            copy_file = self.ftp.retrbinary("RETR " + file_name, file.write)
-            if copy_file != "226 Transfer complete":
-                logging.error("error downloading file " + self.config.ftp_source_path + "/" + file_name)
-                return None
 
         read_lines = self.ftp.retrlines("RETR " + file_name, callback=data_reader.handle_line)
+        logging.info("downloading file " + file_name)
 
         if read_lines != "226 Transfer complete":
             logging.error("error reading data from file  " + self.config.ftp_source_path + "/" + file_name)
@@ -69,15 +71,45 @@ class SourceLoader:
         result = []
         for bill in data_reader.list:
             if len(bill.positions) > 0:
+                Path(local_dir).mkdir(parents=True, exist_ok=True)
+                logging.info("creating directory " + local_dir)
+
+                with open(local_dir + "/" + file_name, "wb") as file:
+                    copy_file = self.ftp.retrbinary("RETR " + file_name, file.write)
+                    logging.info("downloading file " + file_name)
+                    if copy_file != "226 Transfer complete":
+                        logging.error("error downloading file " + self.config.ftp_source_path + "/" + file_name)
+                        return None
+
+                data_file = "rechnung" + bill.bill_id.__str__() + ".data"
+                logging.info("deleting file from " + self.config.ftp_source_server + " with name " + data_file)
+                self.ftp.delete(data_file)
                 result.append(bill)
 
+        logging.info("found " + len(data_reader.list).__str__() + " bills.")
         return result
 
-    def delete_data_files(self):
-        files = []
-        self.ftp.dir(files.append)
+    def upload_zip_and_delete_files(self):
+        self.ftp.cwd(self.config.ftp_source_path_in)
+        logging.info(
+            "ftp directory on server " + self.config.ftp_source_server + " now " + self.config.ftp_source_path_in)
+        for path in os.scandir(self.config.temp_output_path):
+            zip_name = ""
+            for file_name in os.listdir(path):
+                if file_name.endswith(".zip"):
+                    zip_name = file_name
+                    break
 
-        for name in self.ftp.nlst():
-            if name.endswith(".data"):
-                logging.info("deleting file from " + self.config.ftp_source_server + " with name " + name)
-                self.ftp.delete(name)
+            if zip_name == "":
+                continue
+
+            with open(os.path.join(path, zip_name), "rb") as file_txt:
+                self.ftp.storbinary("STOR %s" % zip_name, file_txt)
+                logging.info("saving zip file to ftp server " + self.config.ftp_source_server + ": " + zip_name)
+
+            for f in os.listdir(path):
+                os.remove(os.path.join(path, f))
+            os.rmdir(path)
+            logging.info("deleting directory " + path.name)
+
+        pass
