@@ -1,0 +1,1 @@
+C:\Users\LGU\AppData\Local\Programs\Python\Python36-32\python.exe "C:\projects\tbz\122\LB2\main.py" "C:\projects\tbz\122\LB2\config.json"

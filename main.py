@@ -15,7 +15,7 @@ if __name__ == '__main__':
     config: Config
 
     if len(sys.argv) != 2:
-        logging.basicConfig(filename=log_path, encoding='utf-8', level=logging.DEBUG)
+        logging.basicConfig(filename=log_path, level=logging.DEBUG)
         logging.error("no valid start parameter found: config path needed!")
         exit(-1)
 
@@ -24,11 +24,11 @@ if __name__ == '__main__':
         with open(config_path) as config_file:
             config = json.load(config_file, object_hook=lambda d: SimpleNamespace(**d))
     except:
-        logging.basicConfig(filename=log_path, encoding='utf-8', level=logging.DEBUG)
+        logging.basicConfig(filename=log_path, level=logging.DEBUG)
         logging.error("could not load JSON file: " + config_path)
         exit(-1)
 
-    logging.basicConfig(filename=config.log_path, encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename=config.log_path, level=logging.DEBUG)
 
     source_loader = SourceLoader(config)
     xml_generator = XmlGenerator(config)
